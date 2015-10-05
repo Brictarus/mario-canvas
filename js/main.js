@@ -1,7 +1,11 @@
-﻿function initCanvas($container) {	
-	var $canvas = $('<canvas>Votre navigateur ne supporte pas les technologies récentes. Merci d ele mettre à jour.</canvas>').appendTo($container);
+﻿function initCanvas($container, id) {	
+	var $canvas = $('<canvas>Votre navigateur ne supporte pas les technologies récentes. Merci de le mettre à jour.</canvas>').appendTo($container);
 	$canvas.attr('width', $container.width());
+	id && $canvas.attr("id", id);
 	$canvas.attr('height', $container.height());
+	var layerNumber = $container.children().length;
+	$canvas.addClass("layer-" + layerNumber);
+	$canvas.css("z-index", layerNumber);
 	return $canvas;
 };
 
@@ -55,6 +59,7 @@ function getTileColor(tilename) {
 
 function loadLevel(level, tileW, tileH) {
 	var blocks = [];
+	var characters = [];
 	var i = 0, j = 0;
 	var tileWidth = tileHeight = 32;
 	var tileWidthDebug = tileHeightDebug = 4;
@@ -62,20 +67,35 @@ function loadLevel(level, tileW, tileH) {
 		for (j = 0; j < level.height; j++) {
 			var k = level.data[i][j];
 			var color = getTileColor(k);
-			blocks.push({
-				x: i * tileW,
-				y: j * tileH,
-				w: tileW,
-				h: tileH,
-				color: color
-			})
+			if (k == "mario" || k == "ballmonster" || k == "greenturtle") {
+				characters.push({
+					kind: k,
+					x: i * tileW,
+					y: j * tileH,
+					w: tileW,
+					h: tileH,
+					color: color
+				});
+				k = "";
+			}
+			if (k) {
+				blocks.push({
+					kind: k,
+					x: i * tileW,
+					y: j * tileH,
+					w: tileW,
+					h: tileH,
+					color: color
+				});
+			}
 		}
 	}
-	return blocks;
+	return { blocks : blocks, characters : characters};
 }
 
 function clear() {
 	ctx.clearRect(0, 0, $canvas.width(), $canvas.height());
+	characterLayer.clearRect(0, 0, $canvas.width(), $canvas.height());
 	ctxDbg1.clearRect(0, 0, $canvasDebugLayer1.width(), $canvasDebugLayer1.height());
 }
 
@@ -87,6 +107,27 @@ function renderBlocks(blocks, camera) {
 		ctx.fillStyle = b.color;
 		ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
 	}
+	ctx.restore();
+}
+
+function renderCharacters(characters, ctx, camera) {
+	ctx.save();
+	ctx.translate(-camera.x, -camera.y);
+	for (var i = 0; i < characters.length; i++) {
+		var b = characters[i];
+		ctx.fillStyle = b.color;
+		ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+	}
+	ctx.restore();
+}
+
+function renderBackground(bg, ctx, camera) {
+	ctx.save();
+	var bgParallaxSpeed = 1/6;
+	ctx.translate(-camera.x * bgParallaxSpeed, -camera.y * bgParallaxSpeed);
+	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, 0, 0, $canvas.width(), $canvas.height());
+	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, $canvas.width(), 0, $canvas.width(), $canvas.height());
+	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, $canvas.width() * 2, 0, $canvas.width(), $canvas.height());
 	ctx.restore();
 }
 
@@ -114,13 +155,23 @@ function renderCameraBBox(c) {
 
 function render() {
 	clear();
+	renderBackground(bg, backgroundLayer, camera);
 	renderBlocks(blocks, camera);
+	renderCharacters(characters, characterLayer, camera);
 	renderCameraBBox(camera);
 }
 
 var level = definedLevels[0];
-var $canvas = initCanvas($("#world"));
+var backgroundLayer = initCanvas($("#world"), "layer-background")[0].getContext("2d");
+var bg = background = {};
+bg.img = new Image();
+bg.img.src = 'assets/backgrounds/01.png';
+bg.img.onload = function(){
+	renderBackground(bg, backgroundLayer, camera);
+}
+var $canvas = initCanvas($("#world"), "layer-level");
 var ctx = $canvas[0].getContext("2d");
+var characterLayer = initCanvas($("#world"), "layer-characters")[0].getContext("2d");
 var $canvasDebugLayer0 = initCanvas($("#mapDebug"));
 var $canvasDebugLayer1 = initCanvas($("#mapDebug"));
 var ctxDbg0 = $canvasDebugLayer0[0].getContext("2d");
@@ -134,9 +185,18 @@ var zoom = 1;
 var zoomDebug = 1/8;
 
 var camera = new Camera(0, 0, $canvas.width(), $canvas.height(), zoom, max_x, max_y);
-var blocks = loadLevel(level, tileWidth, tileHeight);
+var res = loadLevel(level, tileWidth, tileHeight);
+var blocks = res.blocks, characters = res.characters;
 renderBlocksDebug(blocks);
 render();
+var mario = null, idx = 0;
+while (mario == null && idx < characters.length) {
+	var tempChar = characters[idx];
+	if (tempChar.kind == "mario") {
+		mario = tempChar;
+	}
+	idx++;
+}
 
 
 var BOTTOM_KEY = 40,
@@ -148,8 +208,21 @@ var BOTTOM_KEY = 40,
 	HOME_KEY = 36,
 	END_KEY = 35;
 	
-$(document).on('keydown', function(event) {
-	var offset = 10;
+$(document).on('keydown', handleCameraMovement);
+
+$canvasDebugLayer1.on("click", function(e) {
+	var offset = $(this).offset(); 
+   var relX = e.pageX - offset.left;
+   var relY = e.pageY - offset.top;
+	 $(".mouse-pos span").text("x: " + relX / zoomDebug + ", y: " + relY / zoomDebug);
+	 camera.centerOn(relX / zoomDebug, relY / zoomDebug).clamp();
+	 render();
+});
+
+
+
+function handleCameraMovement(event) {
+	var offset = 50;
 	var handled = true;
 	switch (event.keyCode) {
 		case BOTTOM_KEY:
@@ -188,13 +261,28 @@ $(document).on('keydown', function(event) {
 		event.preventDefault();
 		return false;
 	}
-});
+}
 
-$canvasDebugLayer1.on("click", function(e) {
-	var offset = $(this).offset(); 
-   var relX = e.pageX - offset.left;
-   var relY = e.pageY - offset.top;
-	 $(".mouse-pos span").text("x: " + relX / zoomDebug + ", y: " + relY / zoomDebug);
-	 camera.centerOn(relX / zoomDebug, relY / zoomDebug).clamp();
-	 render();
-});
+function handleMarioMovement(event) {
+	var offset = 10;
+	var handled = true;
+	switch (event.keyCode) {
+		case BOTTOM_KEY:
+			mario.y += offset; break;
+		case UP_KEY:
+			mario.y -= offset; break;
+		case LEFT_KEY:
+			mario.x -= offset; break;
+		case RIGHT_KEY:
+			mario.x += offset; break;
+		default:
+			handled = false;
+			console.log(event.keyCode);
+			break;
+	} 
+	if (handled) {
+		render();
+		event.preventDefault();
+		return false;
+	}
+}
