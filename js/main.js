@@ -238,7 +238,7 @@ while (mario == null && idx < characters.length) {
 	}
 	idx++;
 }
-
+camera.centerOn(mario.x, mario.y).clamp();
 
 var BOTTOM_KEY = 40,
 	UP_KEY = 38,
@@ -249,7 +249,7 @@ var BOTTOM_KEY = 40,
 	HOME_KEY = 36,
 	END_KEY = 35;
 	
-$(document).on('keydown', handleCameraMovement);
+$(document).on('keydown', handleMarioMovement);
 
 $canvasDebugLayer1.on("click", function(e) {
 	var offset = $(this).offset(); 
@@ -305,7 +305,7 @@ function handleCameraMovement(event) {
 }
 
 function handleMarioMovement(event) {
-	var offset = 10;
+	var offset = 16;
 	var handled = true;
 	switch (event.keyCode) {
 		case BOTTOM_KEY:
@@ -316,12 +316,29 @@ function handleMarioMovement(event) {
 			mario.x -= offset; break;
 		case RIGHT_KEY:
 			mario.x += offset; break;
+		case PLUS_KEY:
+			camera.setZoom(camera.zoom * 2); 
+			camera.clamp();
+			break;
+		case MINUS_KEY:
+			camera.setZoom(camera.zoom / 2);
+			camera.clamp();
+			break;
+		case HOME_KEY:
+			mario.x = 0; 
+			mario.y = 0;
+			break;
+		case END_KEY:
+			mario.x = camera.max_x - mario.w; 
+			mario.y = camera.max_y - mario.h;
+			break;
 		default:
 			handled = false;
 			console.log(event.keyCode);
 			break;
 	} 
 	if (handled) {
+		camera.centerOn(mario.x, mario.y).clamp();
 		render();
 		event.preventDefault();
 		return false;
