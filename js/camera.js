@@ -74,3 +74,10 @@ Camera.prototype.centerOn = function (x, y) {
 	this.moveYTo(~~(y - this.world_h / 2));
 	return this;
 };
+
+Camera.prototype.isVisible = function(entity){
+	return overlap(entity, { 
+		x: this.world_x, y: this.world_y,
+		w : this.world_w, h: this.world_h
+	});
+}

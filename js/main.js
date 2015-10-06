@@ -94,6 +94,7 @@ function loadLevel(level, tileW, tileH) {
 }
 
 function clear() {
+	backgroundLayer.clearRect(0, 0, $canvas.width(), $canvas.height());
 	ctx.clearRect(0, 0, $canvas.width(), $canvas.height());
 	characterLayer.clearRect(0, 0, $canvas.width(), $canvas.height());
 	ctxDbg1.clearRect(0, 0, $canvasDebugLayer1.width(), $canvasDebugLayer1.height());
@@ -102,33 +103,60 @@ function clear() {
 function renderBlocks(blocks, camera) {
 	ctx.save();
 	ctx.translate(-camera.x, -camera.y);
+	var visibles = invisibles = 0;
 	for (var i = 0; i < blocks.length; i++) {
 		var b = blocks[i];
-		ctx.fillStyle = b.color;
-		ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+		if (camera.isVisible(b)) {
+			ctx.fillStyle = b.color;
+			ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+			visibles++;
+		} else {
+			invisibles++;
+		}
 	}
+	displayStat("blocks-visibility", 'visibles = ' + visibles + ", invisibles = " + invisibles);
 	ctx.restore();
 }
 
 function renderCharacters(characters, ctx, camera) {
 	ctx.save();
 	ctx.translate(-camera.x, -camera.y);
+	var visibles = invisibles = 0;
 	for (var i = 0; i < characters.length; i++) {
 		var b = characters[i];
-		ctx.fillStyle = b.color;
-		ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+		if (camera.isVisible(b)) {
+			ctx.fillStyle = b.color;
+			ctx.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+			visibles++;
+		} else {
+			invisibles++;
+		}
 	}
+	displayStat("characters-visibility", 'visibles = ' + visibles + ", invisibles = " + invisibles);
 	ctx.restore();
 }
 
 function renderBackground(bg, ctx, camera) {
-	ctx.save();
-	var bgParallaxSpeed = 1/6;
-	ctx.translate(-camera.x * bgParallaxSpeed, -camera.y * bgParallaxSpeed);
-	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, 0, 0, $canvas.width(), $canvas.height());
-	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, $canvas.width(), 0, $canvas.width(), $canvas.height());
-	ctx.drawImage(bg.img, 0, 0, bg.img.width, bg.img.height, $canvas.width() * 2, 0, $canvas.width(), $canvas.height());
-	ctx.restore();
+	if (bg.img.loaded) {
+		ctx.save();
+		var ratioImg = bg.img_width / bg.img_height;
+		bg.height = Math.round(camera.viewport_h * camera.zoom);
+		bg.width = Math.round(bg.height * ratioImg);
+		
+		
+		var bgParallaxSpeed = 1/6;
+		ctx.translate(-camera.x * bgParallaxSpeed, -camera.y * bgParallaxSpeed);
+
+		var bgIndex = ~~(camera.x / (bg.width / bgParallaxSpeed));
+		var totalLength = -~~(camera.x % (bg.width / bgParallaxSpeed));
+		while (totalLength < camera.viewport_w) {
+			ctx.drawImage(bg.img, 0, 0, bg.img_width, bg.img_height, bgIndex * bg.width, 0, bg.width, bg.height);			
+			totalLength += bg.width;
+			bgIndex++;
+		}
+		
+		ctx.restore();
+	}
 }
 
 function renderBlocksDebug(blocks) {
@@ -145,12 +173,21 @@ function renderCameraBBox(c) {
 	ctxDbg1.fillRect(c.x * zoomDebug / c.zoom, c.y * zoomDebug / c.zoom, c.viewport_w * zoomDebug / c.zoom, c.viewport_h * zoomDebug / c.zoom);
 	ctxDbg1.strokeStyle = "#333";
 	ctxDbg1.strokeRect(c.x * zoomDebug / c.zoom, c.y * zoomDebug / c.zoom, c.viewport_w * zoomDebug / c.zoom, c.viewport_h * zoomDebug / c.zoom);
-	$('p.camera-x span').html(c.x);
-	$('p.camera-y span').html(c.y);
-	$('p.camera-w-x span').html(c.world_x);
-	$('p.camera-w-y span').html(c.world_y);
-	$('p.camera-zoom span').html(c.zoom);
+	displayStat("camera-x", c.x);
+	displayStat("camera-y", c.y);
+	displayStat("camera-w-x", c.world_x);
+	displayStat("camera-w-y", c.world_y);
+	displayStat("camera-zoom", c.zoom);
 	ctxDbg1.restore();
+}
+
+function displayStat(name, value) {
+	var $el = $('p.'+ name +' span');
+	if ($el.length > 0) {
+		$el.html(value);
+	} else {
+		console.log(name + " = " + value);
+	}
 }
 
 function render() {
@@ -165,8 +202,12 @@ var level = definedLevels[0];
 var backgroundLayer = initCanvas($("#world"), "layer-background")[0].getContext("2d");
 var bg = background = {};
 bg.img = new Image();
-bg.img.src = 'assets/backgrounds/01.png';
+bg.img.loaded = false;
+bg.img.src = 'assets/backgrounds/02.png';
 bg.img.onload = function(){
+	bg.img.loaded = true;
+	bg.img_width = this.width;
+	bg.img_height = this.height;
 	renderBackground(bg, backgroundLayer, camera);
 }
 var $canvas = initCanvas($("#world"), "layer-level");

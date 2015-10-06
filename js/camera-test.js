@@ -1,5 +1,5 @@
 ﻿function initCanvas($container) {	
-	var $canvas = $('<canvas>Votre navigateur ne supporte pas les technologies récentes. Merci d ele mettre à jour.</canvas>').appendTo($container);
+	var $canvas = $('<canvas>Votre navigateur ne supporte pas les technologies récentes. Merci de le mettre à jour.</canvas>').appendTo($container);
 	$canvas.attr('width', $container.width());
 	$canvas.attr('height', $container.height());
 	return $canvas;
