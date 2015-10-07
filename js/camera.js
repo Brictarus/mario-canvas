@@ -80,4 +80,8 @@ Camera.prototype.isVisible = function(entity){
 		x: this.world_x, y: this.world_y,
 		w : this.world_w, h: this.world_h
 	});
+};
+
+Camera.prototype.setLevel = function(level){
+	this.level = level;
 }

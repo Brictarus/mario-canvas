@@ -1,106 +1,15 @@
-﻿function initCanvas($container, id) {	
-	var $canvas = $('<canvas>Votre navigateur ne supporte pas les technologies récentes. Merci de le mettre à jour.</canvas>').appendTo($container);
-	$canvas.attr('width', $container.width());
-	id && $canvas.attr("id", id);
-	$canvas.attr('height', $container.height());
-	var layerNumber = $container.children().length;
-	$canvas.addClass("layer-" + layerNumber);
-	$canvas.css("z-index", layerNumber);
-	return $canvas;
-};
-
-var tileToColor = {
-	"": "#BED",
-	//"": "#000",
-	"grass_top": "#8B8",
-	"grass_top_left": "#8B8",
-	"grass_left": "#8B8",
-	"grass_top_left_corner": "#8B8",
-	"grass_top_left_rounded": "#8B8",
-	"grass_top_right_rounded": "#8B8",
-	"mario": "#F00",
-	"planted_soil_left": "#854",
-	"planted_soil_middle": "#854",
-	"planted_soil_right": "#854",
-	"soil": "#854",
-	"soil_right": "#854",
-	"soil_left": "#854",
-	"stone": "#888",
-	"bush_left": "#AAA",
-	"bush_middle_left": "#AAA",
-	"bush_middle": "#AAA",
-	"bush_middle_right": "#AAA",
-	"bush_right": "#AAA",
-	"pipe_top_left": "#151",
-	"pipe_left": "#151",
-	"pipe_left_grass": "#151",
-	"pipe_left_soil": "#151",
-	"pipe_top_right": "#151",
-	"pipe_right": "#151",
-	"pipe_right_grass": "#151",
-	"pipe_right_soil": "#151",
-	"pipe_top_left": "#151",
-	"mushroombox": "#FE2",
-	"starbox": "#FE2",
-	"multiple_coinbox": "#FE2",
-	"coinbox": "#FE2",
-	"coin": "#FA0",
-	"brown_block": "#851",
-	"ballmonster": "#00F",
-	"greenturtle": "#00F"
-};
-function getTileColor(tilename) {
-	if (tileToColor[tilename]) {
-		return tileToColor[tilename];
-	} else {
-		return "#FFF";
-	}
+﻿function clear(camera, layers) {
+	layers = layers || [];
+	layers.map(function(layer) {
+		layer.clearRect(0, 0, camera.viewport_w, camera.viewport_h);
+	});
+	//backgroundLayer.clearRect(0, 0, camera.viewport_w, camera.viewport_h);
+	//ctx.clearRect(0, 0, camera.viewport_w, camera.viewport_h);
+	//characterLayer.clearRect(0, 0, camera.viewport_w, camera.viewport_h);
+	//ctxDbg1.clearRect(0, 0, $canvasDebugLayer1.width(), $canvasDebugLayer1.height());
 }
 
-function loadLevel(level, tileW, tileH) {
-	var blocks = [];
-	var characters = [];
-	var i = 0, j = 0;
-	var tileWidth = tileHeight = 32;
-	var tileWidthDebug = tileHeightDebug = 4;
-	for (i = 0; i < level.width; i++) {
-		for (j = 0; j < level.height; j++) {
-			var k = level.data[i][j];
-			var color = getTileColor(k);
-			if (k == "mario" || k == "ballmonster" || k == "greenturtle") {
-				characters.push({
-					kind: k,
-					x: i * tileW,
-					y: j * tileH,
-					w: tileW,
-					h: tileH,
-					color: color
-				});
-				k = "";
-			}
-			if (k) {
-				blocks.push({
-					kind: k,
-					x: i * tileW,
-					y: j * tileH,
-					w: tileW,
-					h: tileH,
-					color: color
-				});
-			}
-		}
-	}
-	return { blocks : blocks, characters : characters};
-}
-
-function clear() {
-	backgroundLayer.clearRect(0, 0, $canvas.width(), $canvas.height());
-	ctx.clearRect(0, 0, $canvas.width(), $canvas.height());
-	characterLayer.clearRect(0, 0, $canvas.width(), $canvas.height());
-	ctxDbg1.clearRect(0, 0, $canvasDebugLayer1.width(), $canvasDebugLayer1.height());
-}
-
-function renderBlocks(blocks, camera) {
+function renderBlocks(blocks, ctx, camera) {
 	ctx.save();
 	ctx.translate(-camera.x, -camera.y);
 	var visibles = invisibles = 0;
@@ -190,17 +99,17 @@ function displayStat(name, value) {
 	}
 }
 
-function render() {
-	clear();
-	renderBackground(bg, backgroundLayer, camera);
-	renderBlocks(blocks, camera);
-	renderCharacters(characters, characterLayer, camera);
-	renderCameraBBox(camera);
+function render(camera, layers) {
+	clear(camera, layers);
+	renderBackground(camera.level.background, layers[0], camera);
+	renderBlocks(camera.level.blocks, layers[1], camera);
+	renderCharacters(camera.level.characters, layers[2], camera);
+	//renderCameraBBox(camera);
 }
 
-var level = definedLevels[0];
-var backgroundLayer = initCanvas($("#world"), "layer-background")[0].getContext("2d");
-var bg = background = {};
+var mario, camera, layers;
+var levelRawData = definedLevels[0];
+var bg = {};
 bg.img = new Image();
 bg.img.loaded = false;
 bg.img.src = 'assets/backgrounds/02.png';
@@ -208,28 +117,48 @@ bg.img.onload = function(){
 	bg.img.loaded = true;
 	bg.img_width = this.width;
 	bg.img_height = this.height;
-	renderBackground(bg, backgroundLayer, camera);
-}
-var $canvas = initCanvas($("#world"), "layer-level");
-var ctx = $canvas[0].getContext("2d");
-var characterLayer = initCanvas($("#world"), "layer-characters")[0].getContext("2d");
-var $canvasDebugLayer0 = initCanvas($("#mapDebug"));
+	//renderBackground(bg, backgroundLayer, camera);
+	
+	var $root = $("#world");
+	var viewport_width = $root.width(), viewport_heigth = $root.height()
+	var lvl = new Level({
+		$root: $("#world"),
+		config: config,
+		background: bg
+	});
+	var backgroundLayer = lvl.addNewLayer("layer-background");
+	var levelLayer			= lvl.addNewLayer("layer-level");
+	var characterLayer 	= lvl.addNewLayer("layer-characters");
+	layers = [backgroundLayer, levelLayer, characterLayer]; 
+	lvl.load(levelRawData);
+	mario = lvl.hero;
+	camera = new Camera(0, 0, viewport_width, viewport_heigth, config.camera.zoom, lvl.width, lvl.height);
+	lvl.setCamera(camera);
+	camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();
+	
+	render(camera, layers);
+	
+	var handleMarioMovement0 = handleMarioMovement;
+	$(document).on('keydown', handleMarioMovement0);
+	//$canvasDebugLayer1.on("click", clickOnDebugMap);
+};
+
+/*var $canvasDebugLayer0 = initCanvas($("#mapDebug"));
 var $canvasDebugLayer1 = initCanvas($("#mapDebug"));
 var ctxDbg0 = $canvasDebugLayer0[0].getContext("2d");
 var ctxDbg1 = $canvasDebugLayer1[0].getContext("2d");
+var zoomDebug = 1/8;
+
 
 var i = 0, j = 0;
 var tileWidth = tileHeight = 32;
 var max_x = tileWidth * level.width;
 var max_y = tileHeight * level.height;
 var zoom = 1;
-var zoomDebug = 1/8;
-
-var camera = new Camera(0, 0, $canvas.width(), $canvas.height(), zoom, max_x, max_y);
-var res = loadLevel(level, tileWidth, tileHeight);
+*/
+/*var res = loadLevel(level, tileWidth, tileHeight);
 var blocks = res.blocks, characters = res.characters;
 renderBlocksDebug(blocks);
-render();
 var mario = null, idx = 0;
 while (mario == null && idx < characters.length) {
 	var tempChar = characters[idx];
@@ -237,8 +166,7 @@ while (mario == null && idx < characters.length) {
 		mario = tempChar;
 	}
 	idx++;
-}
-camera.centerOn(mario.x, mario.y).clamp();
+}*/
 
 var BOTTOM_KEY = 40,
 	UP_KEY = 38,
@@ -248,19 +176,14 @@ var BOTTOM_KEY = 40,
 	MINUS_KEY = 109,
 	HOME_KEY = 36,
 	END_KEY = 35;
-	
-$(document).on('keydown', handleMarioMovement);
 
-$canvasDebugLayer1.on("click", function(e) {
+function clickOnDebugMap(e) {
 	var offset = $(this).offset(); 
-   var relX = e.pageX - offset.left;
-   var relY = e.pageY - offset.top;
-	 $(".mouse-pos span").text("x: " + relX / zoomDebug + ", y: " + relY / zoomDebug);
-	 camera.centerOn(relX / zoomDebug, relY / zoomDebug).clamp();
-	 render();
-});
-
-
+	var relX = e.pageX - offset.left;
+	var relY = e.pageY - offset.top;
+	$(".mouse-pos span").text("x: " + relX / zoomDebug + ", y: " + relY / zoomDebug);
+	camera.centerOn(relX / zoomDebug, relY / zoomDebug).clamp();
+}
 
 function handleCameraMovement(event) {
 	var offset = 50;
@@ -298,7 +221,7 @@ function handleCameraMovement(event) {
 			break;
 	} 
 	if (handled) {
-		render();
+		//render();
 		event.preventDefault();
 		return false;
 	}
@@ -339,7 +262,7 @@ function handleMarioMovement(event) {
 	} 
 	if (handled) {
 		camera.centerOn(mario.x, mario.y).clamp();
-		render();
+		render(camera, layers);
 		event.preventDefault();
 		return false;
 	}
