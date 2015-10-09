@@ -1,15 +1,27 @@
 var Level = Class.extend({
 	init: function(options) {
+		this.layers = [];
+		this._indexLayers = {};
 		this.$root = options.$root;
 		this.config = options.config;
 		this.background = options.background;
 		this.tileSize = options.tileSize || this.config.tile_size;
-		this.reset();	
+		this.reset();
+
+		var backgroundLayer = this.addNewLayer("layer-background");
+		var levelLayer			= this.addNewLayer("layer-level");
+		var characterLayer 	= this.addNewLayer("layer-characters");		
 	},
 	
 	addNewLayer: function (id) {	
 		if (!this.$root || this.$root.length == 0) {
 			throw 'no root provided for level';
+		}
+		if (!id) {
+			throw 'id is required for new layer creation';
+		}
+		if (this._indexLayers.hasOwnProperty(id)) {
+			throw 'a layer with that id (' + id + ') already exists in this level';
 		}
 		var $canvas = $('<canvas>'+ config.errors.no_canvas_support +'</canvas>').appendTo(this.$root);
 		$canvas.attr('width', this.$root.width());
@@ -18,12 +30,23 @@ var Level = Class.extend({
 		var layerNumber = this.$root.children().length;
 		$canvas.addClass("layer-" + layerNumber);
 		$canvas.css("z-index", layerNumber);
-		return $canvas[0].getContext('2d');
+		var ctx = $canvas[0].getContext('2d');
+		this.layers.push(ctx);
+		this._indexLayers[id] = { $canvas: $canvas, context: ctx};
+		return ctx;
+	},
+	
+	getLayer: function(id) {
+		return this._indexLayers[id].context;
 	},
 	
 	setCamera: function(camera) {
 		this.camera = camera;
 		camera.setLevel(this);
+	},
+	
+	setBackground: function(bg) {
+		this.background = bg;
 	},
 	
 	reset: function() {
@@ -82,5 +105,58 @@ var Level = Class.extend({
 			idx++;
 		}
 		return mario;
+	},
+	
+	render: function(camera) {
+		this.clear(camera, layers);
+		if (this.background) {
+			this.background.render(this.getLayer("layer-background"), camera);
+		}
+		this.renderBlocks(this.getLayer("layer-level"), camera);
+		this.renderCharacters(this.getLayer("layer-characters"), camera);
+		//renderCameraBBox(camera);
+	},
+	
+	clear: function(camera) {
+		this.layers.map(function(layer) {
+			layer.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
+		});
+	},
+	
+	renderBlocks: function(layer, camera) {
+		layer.save();
+		layer.translate(-camera.x, -camera.y);
+		var visibles = invisibles = 0;
+		for (var i = 0; i < this.blocks.length; i++) {
+			var b = this.blocks[i];
+			if (camera.isVisible(b)) {
+				layer.fillStyle = b.color;
+				layer.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+				visibles++;
+			} else {
+				invisibles++;
+			}
+		}
+		displayStat("blocks-visibility", 'visibles = ' + visibles + ", invisibles = " + invisibles);
+		layer.restore();
+	},
+	
+	renderCharacters: function(layer, camera) {
+		layer.save();
+		layer.translate(-camera.x, -camera.y);
+		var visibles = invisibles = 0;
+		for (var i = 0; i < this.characters.length; i++) {
+			var b = this.characters[i];
+			if (camera.isVisible(b)) {
+				layer.fillStyle = b.color;
+				layer.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+				visibles++;
+			} else {
+				invisibles++;
+			}
+		}
+		displayStat("characters-visibility", 'visibles = ' + visibles + ", invisibles = " + invisibles);
+		layer.restore();
 	}
 });
+
