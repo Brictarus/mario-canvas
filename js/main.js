@@ -56,16 +56,21 @@ img.onload = function(){
 	camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();
 	
 	lvl.render(camera);
+	var keyboard = window.k = new Keyboard();
+	keyboard.start();
 	
 	window.g = new Game({
 		fps: 30,
 		autostart: true,
 		tick: function(deltaT) {
+			keyboard.update();
 			lvl.render(camera);
 		}
 	});
 	
 	$(document).on('keydown', handleMarioMovement);
+	
+	
 	//$canvasDebugLayer1.on("click", clickOnDebugMap);
 
 
