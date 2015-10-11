@@ -87,16 +87,16 @@ var Keyboard = Class.extend({
 		return this.getKeyState(keyCode).isDown();
 	},
 	
-	isUp: function() {
-		this.getKeyState(keyCode).isUp();
+	isUp: function(keyCode) {
+		return this.getKeyState(keyCode).isUp();
 	},
 	
-	isJustDown: function() {
-		this.getKeyState(keyCode).isJustDown();
+	isJustDown: function(keyCode) {
+		return this.getKeyState(keyCode).isJustDown();
 	},
 	
-	isJustUp: function() {
-		this.getKeyState(keyCode).isJustUp();
+	isJustUp: function(keyCode) {
+		return this.getKeyState(keyCode).isJustUp();
 	},
 	
 	update: function() {

@@ -15,6 +15,7 @@ var config = {
 		PLUS_KEY: 107,
 		MINUS_KEY: 109,
 		HOME_KEY: 36,
-		END_KEY: 35
+		END_KEY: 35,
+		P: 80
 	}
 }

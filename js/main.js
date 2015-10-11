@@ -59,16 +59,28 @@ img.onload = function(){
 	var keyboard = window.k = new Keyboard();
 	keyboard.start();
 	
-	window.g = new Game({
+	var game = window.g = new Game({
 		fps: 30,
-		autostart: true,
+		autostart: false,
 		tick: function(deltaT) {
 			keyboard.update();
+			player.handleInputs();
 			lvl.render(camera);
 		}
 	});
 	
-	$(document).on('keydown', handleMarioMovement);
+	var player = window.p = new Player({
+		game: game,
+		config: config,
+		inputs: {
+			keyboard: keyboard
+		},
+		level: lvl
+	});
+	
+	game.start();
+	
+	//$(document).on('keydown', handleMarioMovement);
 	
 	
 	//$canvasDebugLayer1.on("click", clickOnDebugMap);

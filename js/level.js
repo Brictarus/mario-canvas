@@ -107,6 +107,13 @@ var Level = Class.extend({
 		return mario;
 	},
 	
+	getHero: function() {
+		if (!this.hero) {
+			this.hero = this.findHero();
+		}
+		return this.hero;
+	},
+	
 	render: function(camera) {
 		this.clear(camera, layers);
 		if (this.background) {
