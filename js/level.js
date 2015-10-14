@@ -68,28 +68,14 @@ var Level = Class.extend({
 		for (i = 0; i < level.width; i++) {
 			for (j = 0; j < level.height; j++) {
 				var k = level.data[i][j];
-				var color = getTileColor(k);
-				if (k == "mario" || k == "ballmonster" || k == "greenturtle") {
-					characters.push({
-						kind: k,
-						x: i * tileWidth,
-						y: j * tileHeight,
-						w: tileWidth,
-						h: tileHeight,
-						color: color
-					});
-					k = "";
-				}
-				if (k) {
-					blocks.push({
-						kind: k,
-						x: i * tileWidth,
-						y: j * tileHeight,
-						w: tileWidth,
-						h: tileHeight,
-						color: color
-					});
-				}
+				if (!k) continue;
+				var drawable = DrawableFactory.createFromName(k, {
+					level: this, 
+					x: i * tileWidth,
+					y: j * tileHeight,
+					w: tileWidth,
+					h: tileHeight
+				});
 			}
 		}
 		this.hero = this.findHero();
@@ -99,7 +85,7 @@ var Level = Class.extend({
 		var mario = null, idx = 0;
 		while (mario == null && idx < this.characters.length) {
 			var tempChar = this.characters[idx];
-			if (tempChar.kind == "mario") {
+			if (tempChar instanceof Hero) {
 				mario = tempChar;
 			}
 			idx++;
@@ -112,6 +98,12 @@ var Level = Class.extend({
 			this.hero = this.findHero();
 		}
 		return this.hero;
+	},
+	
+	update: function(deltaT) {
+		this.characters.forEach(function(entity) {
+			entity.update(deltaT);
+		});
 	},
 	
 	render: function(camera) {
@@ -137,8 +129,7 @@ var Level = Class.extend({
 		for (var i = 0; i < this.blocks.length; i++) {
 			var b = this.blocks[i];
 			if (camera.isVisible(b)) {
-				layer.fillStyle = b.color;
-				layer.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+				b.draw(layer,  camera);
 				visibles++;
 			} else {
 				invisibles++;
@@ -155,8 +146,7 @@ var Level = Class.extend({
 		for (var i = 0; i < this.characters.length; i++) {
 			var b = this.characters[i];
 			if (camera.isVisible(b)) {
-				layer.fillStyle = b.color;
-				layer.fillRect(~~(b.x * camera.zoom), ~~(b.y * camera.zoom), ~~(b.w * camera.zoom), ~~(b.h * camera.zoom));
+				b.draw(layer,  camera);
 				visibles++;
 			} else {
 				invisibles++;

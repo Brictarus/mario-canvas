@@ -63,8 +63,10 @@ img.onload = function(){
 		fps: 30,
 		autostart: false,
 		tick: function(deltaT) {
-			keyboard.update();
-			player.handleInputs();
+			keyboard.update(deltaT);
+			player.handleInputs(deltaT);
+			lvl.update(deltaT);
+			camera.centerOn(mario.x, mario.y).clamp();
 			lvl.render(camera);
 		}
 	});
