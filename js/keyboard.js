@@ -30,6 +30,8 @@ var Key = Class.extend({
 			this.time = new Date;
 			this.repeats = 0;
 		}
+		if (this.isKeyHandled(event))
+			event.preventDefault();
 	},
 	
 	onKeyUp: function(event) {
@@ -38,6 +40,15 @@ var Key = Class.extend({
 			this.time = new Date;
 			this.repeats = 0;
 		}
+	},
+	
+	isKeyHandled: function(event) {
+		var code = event.keyCode;
+		for (var k in config.keys) {
+			if (config.keys[k] == code)
+				return true;
+		}
+		return false;
 	}
 });
 

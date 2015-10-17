@@ -28,23 +28,32 @@ var Player = Class.extend({
 		} else {
 			var velocity = this.hero.velocity;
 			this.upJustDown = this.keyboard.isJustDown(this.config.keys.UP_KEY);
+			this.upDown = this.keyboard.isDown(this.config.keys.UP_KEY);
 			this.downDown = this.keyboard.isDown(this.config.keys.BOTTOM_KEY);
 			if (this.upJustDown) {
-				velocity.y -= 4;
+			//if (this.upDown) {
+				velocity.y = -20;
+				//velocity.y -= this.hero.acc;
+				//velocity.y = Math.max(velocity.y, -this.hero._maxSpeed);
 			} else if (this.downDown) {
-				velocity.y = 0;
-			} 
+				//velocity.y = 0;
+				velocity.y += this.hero.acc;
+				velocity.y = Math.min(velocity.y, this.hero._maxSpeed);
+			}
+			//velocity.y *= this.hero._friction;
+			if (Math.abs(velocity.y) < 0.1) {
+				velocity.y = 0.0;
+			}
+			
 			// this.downDown && this.hero.lower();
 			this.leftDown = this.keyboard.isDown(this.config.keys.LEFT_KEY);
 			this.rightDown = this.keyboard.isDown(this.config.keys.RIGHT_KEY);
 			if (this.leftDown) {
 				velocity.x -= this.hero.acc;
-				velocity.x = Math.max(velocity.x, -this.hero._maxSpeed)
+				velocity.x = Math.max(velocity.x, -this.hero._maxSpeed);
 			} else if (this.rightDown) {
 				velocity.x += this.hero.acc;
-				velocity.x = Math.min(velocity.x, this.hero._maxSpeed)
-			} else {
-				//velocity.x = 0;
+				velocity.x = Math.min(velocity.x, this.hero._maxSpeed);
 			}
 			velocity.x *= this.hero._friction;
 			if (Math.abs(velocity.x) < 0.1) {

@@ -4,3 +4,4 @@ var Vector = Class.extend({
 		this.y = y;
 	}
 });
+Vector.Zero = new Vector(0,0);

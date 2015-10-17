@@ -26,6 +26,22 @@
 	}
 */
 
+var testLevel = {
+	width: 6,
+	height: 5,
+	id: -1,
+	background: 1,
+	data:
+	[
+	['' , '' , '' , '' , 'grass_top'],
+	['' , 'mario' , '' , '' , 'grass_top'],
+	['' , '' , '' , '' , 'grass_top'],
+	['' , '' , '' , '' , ''],
+	['' , '' , '' , '' , ''],
+	['' , '' , '' , '' , '']
+	]
+};
+
 var definedLevels = [
 {
 	width: 252,

@@ -7,6 +7,7 @@ var Drawable = Class.extend({
 		this.h = options.h;
 		
 		this.dbgColor = options.dbgColor;
+		this.level = options.level;
 	},
 	
 	draw: function(context, camera) {

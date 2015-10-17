@@ -39,7 +39,9 @@ var Game = Class.extend({
     }
 
     // request another frame
-    requestAnimationFrame(this.animate.bind(this));
+		if (this.fps != -1) {
+			requestAnimationFrame(this.animate.bind(this));
+		}
 
     // calc elapsed time since last loop
     var now = Date.now();

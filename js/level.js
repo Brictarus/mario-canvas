@@ -51,7 +51,8 @@ var Level = Class.extend({
 	
 	reset: function() {
 		this.blocks = [];
-		this.characters = [];	
+		this.characters = [];
+		this.collidables = [];
 		this.hero = null;
 		this.width = null;
 		this.height = null;
@@ -71,13 +72,15 @@ var Level = Class.extend({
 				if (!k) continue;
 				var drawable = DrawableFactory.createFromName(k, {
 					level: this, 
-					x: i * tileWidth,
-					y: j * tileHeight,
+					x: i == 0 ? 0 : i * tileWidth - 1,
+					y: j == 0 ? 0 : j * tileHeight - 1,
 					w: tileWidth,
 					h: tileHeight
 				});
+				console.log(drawable.x +", "+drawable.y);
 			}
 		}
+		this.collidables = this.blocks.concat(this.characters);
 		this.hero = this.findHero();
 	},
 	
@@ -104,6 +107,19 @@ var Level = Class.extend({
 		this.characters.forEach(function(entity) {
 			entity.update(deltaT);
 		});
+	},
+	
+	findCollidablesInRect: function(excludes, rect) {
+		var collidings = [];
+		for (var i = 0, c; i < this.collidables.length; i++) {
+			c = this.collidables[i];
+			if (excludes.indexOf(c) == -1) {
+				if (overlap(rect, c)) {
+					collidings.push(c);
+				}
+			}
+		}
+		return collidings;
 	},
 	
 	render: function(camera) {

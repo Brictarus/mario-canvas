@@ -50,3 +50,30 @@ function getTileColor(tilename) {
 function overlap(rect1, rect2) {
 	return !(rect1.x + rect1.w < rect2.x || rect2.x + rect2.w < rect1.x || rect1.y + rect1.h < rect2.y || rect2.y + rect2.h < rect1.y);
 }
+
+function getIntersectionDepth(rectA, rectB) {
+		// Calculate half sizes.
+		var halfWidthA = rectA.w / 2;
+		var halfHeightA = rectA.h / 2;
+		var halfWidthB = rectB.w / 2;
+		var halfHeightB = rectB.h / 2;
+
+		// Calculate centers.
+		var centerA = new Vector(rectA.x + halfWidthA, rectA.y + halfHeightA);
+		var centerB = new Vector(rectB.x + halfWidthB, rectB.y + halfHeightB);
+
+		// Calculate current and minimum-non-intersecting distances between centers.
+		var distanceX = centerA.x - centerB.x;
+		var distanceY = centerA.y - centerB.y;
+		var minDistanceX = halfWidthA + halfWidthB;
+		var minDistanceY = halfHeightA + halfHeightB;
+
+		// If we are not intersecting at all, return (0, 0).
+		if (Math.abs(distanceX) >= minDistanceX || Math.abs(distanceY) >= minDistanceY)
+				return Vector.Zero;
+
+		// Calculate and return intersection depths.
+		var depthX = distanceX > 0 ? minDistanceX - distanceX : -minDistanceX - distanceX;
+		var depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
+		return new Vector(depthX, depthY);
+}

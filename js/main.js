@@ -33,7 +33,8 @@ function displayStat(name, value) {
 }
 
 var mario, camera, layers;
-var levelRawData = definedLevels[0];
+//var levelRawData = definedLevels[0];
+var levelRawData = testLevel;
 
 img = new Image();
 img.src = 'assets/backgrounds/02.png';
@@ -60,7 +61,7 @@ img.onload = function(){
 	keyboard.start();
 	
 	var game = window.g = new Game({
-		fps: 30,
+		fps: 60,
 		autostart: false,
 		tick: function(deltaT) {
 			keyboard.update(deltaT);
@@ -81,6 +82,8 @@ img.onload = function(){
 	});
 	
 	game.start();
+	
+	$("#debug-step-button").on("click", function() { game.animate(); });
 	
 	//$(document).on('keydown', handleMarioMovement);
 	
