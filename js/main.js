@@ -33,8 +33,8 @@ function displayStat(name, value) {
 }
 
 var mario, camera, layers;
-//var levelRawData = definedLevels[0];
-var levelRawData = testLevel;
+var levelRawData = definedLevels[0];
+//var levelRawData = testLevel;
 
 img = new Image();
 img.src = 'assets/backgrounds/02.png';
