@@ -10,7 +10,7 @@ var Level = Class.extend({
 
 		var backgroundLayer = this.addNewLayer("layer-background");
 		var levelLayer			= this.addNewLayer("layer-level");
-		var characterLayer 	= this.addNewLayer("layer-characters");		
+		var characterLayer 	= this.addNewLayer("layer-characters");
 	},
 	
 	addNewLayer: function (id) {	
@@ -77,11 +77,18 @@ var Level = Class.extend({
 					w: tileWidth,
 					h: tileHeight
 				});
-				console.log(drawable.x +", "+drawable.y);
+				//console.log(drawable.x +", "+drawable.y);
 			}
 		}
 		this.collidables = this.blocks.concat(this.characters);
 		this.hero = this.findHero();
+    
+    this.tree = new Quadtree({
+      x: 0,
+      y: 0,
+      width: this.width,
+      height: this.height
+    });
 	},
 	
 	findHero: function () {
@@ -104,21 +111,42 @@ var Level = Class.extend({
 	},
 	
 	update: function(deltaT) {
-		this.characters.forEach(function(entity) {
+		this.updateTree();
+    this.characters.forEach(function(entity) {
 			entity.update(deltaT);
 		});
 	},
+  
+  updateTree: function() {
+    var tree = this.tree;
+    tree.clear();
+    this.collidables.forEach(function(item) {
+      tree.insert({
+        x: item.x,
+        y: item.y,
+        width: item.w,
+        height: item.h,
+        item: item
+      });
+    });
+  },
 	
 	findCollidablesInRect: function(excludes, rect) {
-		var collidings = [];
-		for (var i = 0, c; i < this.collidables.length; i++) {
-			c = this.collidables[i];
-			if (excludes.indexOf(c) == -1) {
-				if (overlap(rect, c)) {
-					collidings.push(c);
+		var collidings = [], item;
+    var items = this.tree.retrieve({
+      x: rect.x,
+      y: rect.y,
+      width: rect.w,
+      height: rect.h
+    });
+    for (var i = 0; i < items.length; i++) {
+      item = items[i].item;
+      if (excludes.indexOf(item) == -1) {
+        if (overlap(rect, item)) {
+					collidings.push(item);
 				}
 			}
-		}
+    }
 		return collidings;
 	},
 	

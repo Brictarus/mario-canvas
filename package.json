@@ -1,0 +1,29 @@
+{
+  "name": "mario-canvas",
+  "version": "0.0.1",
+  "description": "Simple platformer game using canvas",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brictarus/mario-canvas.git"
+  },
+  "keywords": [
+    "game",
+    "canvas",
+    "mario",
+    "html5",
+    "js"
+  ],
+  "author": "Brictarus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brictarus/mario-canvas/issues"
+  },
+  "homepage": "https://github.com/Brictarus/mario-canvas#readme",
+  "devDependencies": {
+    "quadtree-js": "git+https://github.com/timohausmann/quadtree-js.git"
+  }
+}
