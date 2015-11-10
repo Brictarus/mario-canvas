@@ -52,8 +52,30 @@ function overlapWithBorders(rect1, rect2) {
 }
 
 function overlap(rect1, rect2) {
-	return !(rect1.x + rect1.w <= rect2.x || rect2.x + rect2.w <= rect1.x || rect1.y + rect1.h <= rect2.y || rect2.y + rect2.h <= rect1.y);
+	//return !(rect1.x + rect1.w <= rect2.x || rect2.x + rect2.w <= rect1.x || rect1.y + rect1.h <= rect2.y || rect2.y + rect2.h <= rect1.y);
+	return !(MathUtils.almostLe(rect1.x + rect1.w, rect2.x) || 
+          MathUtils.almostLe(rect2.x + rect2.w, rect1.x) || 
+          MathUtils.almostLe(rect1.y + rect1.h, rect2.y) || 
+          MathUtils.almostLe(rect2.y + rect2.h, rect1.y));
+  
 }
+
+var MathUtils = function(options) {
+  options = options || {};
+  var epsilon = options.epsilon || Number.EPSILON;
+  return { 
+  	  EPSILON: epsilon,
+  	  almostEquals: function(a, b) {
+	    return Math.abs(a-b) <= epsilon;
+	  },
+	  almostLe: function(a, b) {
+	    return a < b || MathUtils.almostEquals(a, b); 
+	  },
+	  almostGe: function (a, b) {
+	    return a > b || MathUtils.almostEquals(a, b); 
+	  }
+  };
+}({ epsilon: 1e-10 });
 
 function getIntersectionDepth(rectA, rectB) {
 		// Calculate half sizes.

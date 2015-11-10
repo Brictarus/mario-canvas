@@ -20,7 +20,7 @@ var Player = Class.extend({
 		}
 	},
 	
-	readKeyboard: function() {
+	readKeyboard: function(dt) {
 		this.initControls();
 		this.pauseDown = this.keyboard.isJustDown(this.config.keys.P);
 		if (this.pauseDown) {
@@ -30,17 +30,17 @@ var Player = Class.extend({
 			this.upJustDown = this.keyboard.isJustDown(this.config.keys.UP_KEY);
 			this.upDown = this.keyboard.isDown(this.config.keys.UP_KEY);
 			this.downDown = this.keyboard.isDown(this.config.keys.BOTTOM_KEY);
-			if (this.upJustDown) {
+			if (this.upJustDown && this.hero.grounded) {
 			//if (this.upDown) {
-				velocity.y = -20;
+				velocity.y = -30;
 				//velocity.y -= this.hero.acc;
 				//velocity.y = Math.max(velocity.y, -this.hero._maxSpeed);
 			} else if (this.downDown) {
-				//velocity.y = 0;
-				velocity.y += this.hero.acc;
-				velocity.y = Math.min(velocity.y, this.hero._maxSpeed);
+				velocity.y = 0;
+				/*velocity.y += this.hero.acc;
+				velocity.y = Math.min(velocity.y, this.hero._maxSpeed);*/
 			}
-			//velocity.y *= this.hero._friction;
+			velocity.y *= this.hero._friction;
 			if (Math.abs(velocity.y) < 0.1) {
 				velocity.y = 0.0;
 			}
@@ -59,6 +59,7 @@ var Player = Class.extend({
 			if (Math.abs(velocity.x) < 0.1) {
 				velocity.x = 0.0;
 			}
+			//if (velocity.x) console.log(velocity.x);
 			
 		}
 	}

@@ -51,7 +51,7 @@ img.onload = function(){
 		parallax: 1/6
 	});
 	lvl.setBackground(background);
-	mario = lvl.hero;
+	window.hero = mario = lvl.hero;
 	camera = new Camera(0, 0, viewport_width, viewport_heigth, config.camera.zoom, lvl.width, lvl.height);
 	lvl.setCamera(camera);
 	camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();

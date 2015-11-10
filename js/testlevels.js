@@ -33,12 +33,12 @@ var testLevel = {
 	background: 1,
 	data:
 	[
+	['' , '' , '' , 'grass_top' , 'grass_top'],
 	['' , '' , '' , '' , 'grass_top'],
-	['' , 'mario' , '' , '' , 'grass_top'],
+	['' , '' , '' , 'mario' , 'grass_top'],
 	['' , '' , '' , '' , 'grass_top'],
-	['' , '' , '' , '' , ''],
-	['' , '' , '' , '' , ''],
-	['' , '' , '' , '' , '']
+	['' , '' , '' , 'grass_top' , 'grass_top'],
+	['' , '' , '' , '' , 'grass_top']
 	]
 };
 
