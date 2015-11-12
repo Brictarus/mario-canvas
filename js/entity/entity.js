@@ -13,9 +13,6 @@ var Entity = Drawable.extend({
     var v = this.velocity;
     this.grounded = this.isOnGround();
     this.applyGravity(this.grounded);
-		/*if (v.y > 0) {
-			v.y = Math.min(v.y, 15);
-		}*/
 
     this.x += this.velocity.x;
     this.y += this.velocity.y;
@@ -24,7 +21,7 @@ var Entity = Drawable.extend({
 
     // a collision is detected
     if (collidings.length > 0) {
-      var minXDistance = this.getShortestDistance(this.velocity.x, "AXISX", collidings);
+      /*var minXDistance = this.getShortestDistance(this.velocity.x, "AXISX", collidings);
       var minYDistance = this.getShortestDistance(this.velocity.y, "AXISY", collidings);
       if (minXDistance !== null) {
         this.velocity.x = 0;
@@ -43,8 +40,14 @@ var Entity = Drawable.extend({
         } else if (minYDistance != null) {
           this.y += minYDistance;
         }
-        this.dbgColor = "blue";
+      }*/
+      var resolver = new CollisionSolver();
+      for (var i = 0; i < collidings.length; i++) {
+        var c = collidings[i];
+        //resolver.resolveElastic(this, c);
+        resolver.resolveDisplacement(this, c);
       }
+      this.dbgColor = "blue";
     } else {
       this.dbgColor = "red";
     }
