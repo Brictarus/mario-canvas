@@ -27,18 +27,17 @@
 */
 
 var testLevel = {
-	width: 6,
-	height: 5,
+	width: 5,
+	height: 8,
 	id: -1,
 	background: 1,
 	data:
 	[
-	['' , '' , '' , '' , 'grass_top'],
-	['' , 'mario' , '' , '' , 'grass_top'],
-	['' , '' , '' , '' , 'grass_top'],
-	['' , '' , '' , '' , ''],
-	['' , '' , '' , '' , ''],
-	['' , '' , '' , '' , '']
+	['' , '' , '' , '' , '', '' , '' , 'grass_top'],
+	['' , '' , '' , '' , 'grass_top', '' , 'mario' , 'grass_top'],
+	['' , '' , '' , '' , 'grass_top', '' , '' , 'grass_top'],
+	['' , '' , '' , '' , '', '' , '' , 'grass_top'],
+	['' , '' , '' , '' , '', '' , '' , 'grass_top'],
 	]
 };
 
@@ -55,7 +54,7 @@ var definedLevels = [
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'pipe_top_left' , 'pipe_left' , 'pipe_left_grass' , 'pipe_left_soil'],
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'pipe_top_right' , 'pipe_right' , 'pipe_right_grass' , 'pipe_right_soil'],
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'grass_top' , 'soil'],
-	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'mario' , 'grass_top' , 'soil'],
+	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'mario' , '' , 'grass_top' , 'soil'],
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , 'multiple_coinbox' , '' , '' , '' , 'grass_top' , 'soil'],
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'grass_top' , 'planted_soil_left'],
 	['' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , '' , 'grass_top' , 'planted_soil_middle'],

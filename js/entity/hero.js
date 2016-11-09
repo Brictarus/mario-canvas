@@ -2,9 +2,9 @@ var Hero = Entity.extend({
 	init: function(options) {
 		options = options || {};
 		options.friction = 0.80;
-		options.maxSpeed = 5;
+		options.maxSpeed = 50;
 		this._super(options);
-		this.acc = 0.5;
+		this.acc = 1.1;
 	},
 	goLeft: function() {
 		this.velocity.x = -this._maxSpeed;

@@ -41,7 +41,7 @@ img.src = 'assets/backgrounds/02.png';
 img.onload = function(){
 	var $root = $("#world");
 	var viewport_width = $root.width(), viewport_heigth = $root.height()
-	var lvl = new Level({
+	var lvl = window.LEVEL = new Level({
 		$root: $("#world"),
 		config: config
 	});
@@ -51,7 +51,7 @@ img.onload = function(){
 		parallax: 1/6
 	});
 	lvl.setBackground(background);
-	mario = lvl.hero;
+	window.MARIO = mario = lvl.hero;
 	camera = new Camera(0, 0, viewport_width, viewport_heigth, config.camera.zoom, lvl.width, lvl.height);
 	lvl.setCamera(camera);
 	camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();

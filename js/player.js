@@ -30,9 +30,9 @@ var Player = Class.extend({
 			this.upJustDown = this.keyboard.isJustDown(this.config.keys.UP_KEY);
 			this.upDown = this.keyboard.isDown(this.config.keys.UP_KEY);
 			this.downDown = this.keyboard.isDown(this.config.keys.BOTTOM_KEY);
-			if (this.upJustDown) {
+			if (this.upJustDown && this.hero.onGround) {
 			//if (this.upDown) {
-				velocity.y = -20;
+				velocity.y = -13;
 				//velocity.y -= this.hero.acc;
 				//velocity.y = Math.max(velocity.y, -this.hero._maxSpeed);
 			} else if (this.downDown) {
