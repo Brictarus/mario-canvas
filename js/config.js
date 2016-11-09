@@ -5,7 +5,7 @@ var config = {
 		zoom: 1
 	},
 	errors: {
-		no_canvas_support: "Votre navigateur ne supporte pas les technologies récentes. Merci de le mettre à jour."
+		no_canvas_support: "Votre navigateur ne supporte pas les technologies rÃ©centes. Merci de le mettre Ã  jour."
 	},
 	keys: {
 		BOTTOM_KEY: 40,
@@ -16,6 +16,7 @@ var config = {
 		MINUS_KEY: 109,
 		HOME_KEY: 36,
 		END_KEY: 35,
-		P: 80
+		P: 80,
+		LEFT_SHIFT: 16
 	}
 }

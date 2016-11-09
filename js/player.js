@@ -46,14 +46,16 @@ var Player = Class.extend({
 			}
 			
 			// this.downDown && this.hero.lower();
+			this.shiftDown = this.keyboard.isDown(this.config.keys.LEFT_SHIFT);
 			this.leftDown = this.keyboard.isDown(this.config.keys.LEFT_KEY);
 			this.rightDown = this.keyboard.isDown(this.config.keys.RIGHT_KEY);
+			var maxSpeedXModifier = this.shiftDown ? 1.5 : 1;
 			if (this.leftDown) {
-				velocity.x -= this.hero.acc;
-				velocity.x = Math.max(velocity.x, -this.hero._maxSpeed);
+				velocity.x -= (this.hero.acc * maxSpeedXModifier);
+				velocity.x = Math.max(velocity.x, -this.hero._maxSpeed * maxSpeedXModifier);
 			} else if (this.rightDown) {
-				velocity.x += this.hero.acc;
-				velocity.x = Math.min(velocity.x, this.hero._maxSpeed);
+				velocity.x += (this.hero.acc * maxSpeedXModifier);
+				velocity.x = Math.min(velocity.x, this.hero._maxSpeed * maxSpeedXModifier);
 			}
 			velocity.x *= this.hero._friction;
 			if (Math.abs(velocity.x) < 0.1) {
