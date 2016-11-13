@@ -15,18 +15,30 @@ function renderCameraBBox(c) {
   ctxDbg1.restore();
 }
 
-function displayStats(c /* camera */) {
+function displayStats(c /** camera **/, hero) {
   displayStat("camera-x", c.x);
   displayStat("camera-y", c.y);
   displayStat("camera-w-x", c.world_x);
   displayStat("camera-w-y", c.world_y);
-  displayStat("camera-zoom", c.zoom);
+  var hitL = (!!hero.hitLeft);
+  var hitR = (!!hero.hitRight);
+  var hitU = (!!hero.hitUp);
+  var hitD = (!!hero.hitDown);
+  displayStat("hit-l", hitL.toString().charAt(0).toUpperCase());
+  displayStat("hit-r", hitR.toString().charAt(0).toUpperCase());
+  displayStat("hit-u", hitU.toString().charAt(0).toUpperCase());
+  displayStat("hit-d", hitD.toString().charAt(0).toUpperCase());
+  $('.hit-l')[hitL ? "addClass" : "removeClass"]("true");
+  $('.hit-r')[hitR ? "addClass" : "removeClass"]("true");
+  $('.hit-u')[hitU ? "addClass" : "removeClass"]("true");
+  $('.hit-d')[hitD ? "addClass" : "removeClass"]("true");
+
 }
 
 function displayStat(name, value) {
   var $el = $('p.' + name + ' span');
   if ($el.length > 0) {
-    $el.html(value);
+    $el.html(value.toString());
   } else {
     console.log(name + " = " + value);
   }
@@ -63,12 +75,28 @@ img.onload = function () {
   var game = window.g = new Game({
     fps: 60,
     autostart: false,
+    camera: camera,
+    level: lvl,
     tick: function (deltaT) {
-      keyboard.update(deltaT);
-      player.handleInputs(deltaT);
-      lvl.update(deltaT);
-      camera.centerOn(mario.x, mario.y).clamp();
-      lvl.render(camera);
+      switch (this.state) {
+        case GameState.RUN:
+          if (!lvl.hero.alive) {
+            this.state = GameState.GAME_OVER;
+            return;
+          }
+          keyboard.update(deltaT);
+          player.handleInputs(deltaT);
+          lvl.update(deltaT);
+          camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();
+          lvl.render(camera);
+          displayStats(camera, lvl.hero);
+          break;
+        case GameState.GAME_OVER:
+          this.gameOver();
+          break;
+        default:
+          throw "unsupported game state";
+      }
     }
   });
 
@@ -163,7 +191,7 @@ img.onload = function () {
     }
   }
 
-  function handleMarioMovement(event) {
+  /*function handleMarioMovement(event) {
     var offset = 16;
     var handled = true;
     switch (event.keyCode) {
@@ -206,5 +234,5 @@ img.onload = function () {
       event.preventDefault();
       return false;
     }
-  }
+  }*/
 };

@@ -6,16 +6,17 @@ var Hero = Entity.extend({
     this._super(options);
     this.acc = 0.9;
   },
-  goLeft: function () {
-    this.velocity.x = -this._maxSpeed;
-  },
-  goRight: function () {
-    this.velocity.x = this._maxSpeed;
-  },
-  jump: function () {
-    this.y--;
-  },
-  goLeft: function () {
-    this.x--;
-  },
+
+  update: function(deltaT) {
+    this._super();
+    if (this.x < 0) {
+      this.x = 0;
+    }
+    if (this.x + this.w > this.level.width) {
+      this.x = this.level.width - this.w;
+    }
+    if (this.y + this.h > this.level.height) {
+      this.alive = false;
+    }
+  }
 });
