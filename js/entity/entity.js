@@ -33,7 +33,7 @@ var Entity = Drawable.extend({
     this.resolveYaxis();
   },
 
-  resolveXaxis : function () {
+  resolveXaxis: function () {
     var vx = this.velocity.x;
     if (vx == 0) return;
     var rectX = this.getCollisionRectX();
@@ -46,9 +46,13 @@ var Entity = Drawable.extend({
       return;
     }
     if (vx > 0) {
-      sort = function (a, b) { return a.x < b.x };
+      sort = function (a, b) {
+        return a.x < b.x
+      };
     } else if (vx < 0) {
-      sort = function (a, b) { return (b.x + b.w) > (a.x + a.w) };
+      sort = function (a, b) {
+        return (b.x + b.w) > (a.x + a.w)
+      };
     }
 
     var sortedX = collidings.sort(sort);
@@ -95,7 +99,7 @@ var Entity = Drawable.extend({
       this.onGround = (first.y <= nextBottomPos);
       // When falling from too high, the player bounces and loose x velocity (kind of quick stun)
       if (this.onGround && vy > gravity * 30) {
-        this.velocity.y = -vy/3;
+        this.velocity.y = -vy / 3;
         this.velocity.x = 0;
         this.onGround = false;
       } else {
