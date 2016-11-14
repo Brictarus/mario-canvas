@@ -84,4 +84,4 @@ Camera.prototype.isVisible = function (entity) {
 
 Camera.prototype.setLevel = function (level) {
   this.level = level;
-}
+};

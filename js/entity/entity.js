@@ -7,6 +7,7 @@ var Entity = Drawable.extend({
     this.velocity = new Vector(0, 0);
     this._maxSpeed = options.maxSpeed;
     this._friction = options.friction || 1.0;
+    this.alive = (options.alive !== undefined) ? options.alive : true;
 
     options.level && options.level.characters.push(this);
   },
@@ -34,6 +35,8 @@ var Entity = Drawable.extend({
   },
 
   resolveXaxis: function () {
+    this.hitLeft = null;
+    this.hitRight = null;
     var vx = this.velocity.x;
     if (vx == 0) return;
     var rectX = this.getCollisionRectX();
@@ -60,14 +63,18 @@ var Entity = Drawable.extend({
     var t;
     if (vx > 0) {
       t = Math.min(first.x, this.x + this.w + vx);
+      this.hitRight = (first.x <= this.x + this.w + vx) ? first : null;
       this.x = t - this.w;
     } else {
       t = Math.max(first.x + first.w, this.x + vx);
+      this.hitLeft = (first.x + first.w >= this.x + vx) ? first : null;
       this.x = t;
     }
   },
 
   resolveYaxis: function () {
+    this.hitUp = null;
+    this.hitDown = null;
     var vy = this.velocity.y;
     if (vy == 0) return;
     var rectY = this.getCollisionRectY();
@@ -96,7 +103,8 @@ var Entity = Drawable.extend({
     if (vy > 0) {
       var nextBottomPos = this.y + this.h + vy;
       t = Math.min(first.y, nextBottomPos);
-      this.onGround = (first.y <= nextBottomPos);
+      this.hitDown = (first.y <= nextBottomPos) ? first : null;
+      this.onGround = !!this.hitDown;
       // When falling from too high, the player bounces and loose x velocity (kind of quick stun)
       if (this.onGround && vy > gravity * 30) {
         this.velocity.y = -vy / 3;
@@ -108,6 +116,7 @@ var Entity = Drawable.extend({
       this.y = t - this.w;
     } else {
       t = Math.max(first.y + first.h, this.y + vy);
+      this.hitUp = (first.y + first.h >= this.y + vy) ? first : null;
       // When the player hit the top, decrease speed for smoother effect
       if (first.y + first.h > this.y + vy) {
         this.velocity.y = vy * 4 / 5;

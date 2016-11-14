@@ -27,13 +27,27 @@ body {
 }
 
 #debug {
-	margin: 0; padding: 0; position: absolute;right: 0%;
+	margin: 0; padding: 0; position: absolute;left: 0;
 	width: 940px;
 }
+
+#debug .hero-hits > p {
+	display: inline;
+}
+
+#debug .hero-hits > p span {
+	color: red;
+}
+
+#debug .hero-hits > p.true > span {
+	color: green;
+}
+
 #mapDebug {
 	margin: 0; padding: 0; position: relative;right: 0%;
 	/*border: 1px solid #F00;*/
 	height: 100px; width: 100%;
+	display: none;
 }
 #mapDebug > canvas {
 	position: absolute;
