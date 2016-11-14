@@ -1,0 +1,24 @@
+{
+  "name": "mario-canvas",
+  "version": "1.0.0",
+  "description": "Mario-Canvas is an attempt of a platformer game using the canvas tag of html5.",
+  "main": "server.js",
+  "devDependencies": {
+    "connect": "3.5.0",
+    "serve-static": "1.11.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brictarus/mario-canvas.git"
+  },
+  "author": "Brictarus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brictarus/mario-canvas/issues"
+  },
+  "homepage": "https://github.com/Brictarus/mario-canvas#readme"
+}

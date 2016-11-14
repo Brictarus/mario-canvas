@@ -77,7 +77,7 @@ var Level = Class.extend({
           w: tileWidth,
           h: tileHeight
         });
-        console.log(drawable.x + ", " + drawable.y);
+        //console.log(drawable.x + ", " + drawable.y);
       }
     }
     this.collidables = this.blocks.concat(this.characters);
@@ -129,7 +129,6 @@ var Level = Class.extend({
     }
     this.renderBlocks(this.getLayer("layer-level"), camera);
     this.renderCharacters(this.getLayer("layer-characters"), camera);
-    //renderCameraBBox(camera);
   },
 
   clear: function (camera) {

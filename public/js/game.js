@@ -3,9 +3,11 @@ var Game = Class.extend({
     options = options || {};
     this.camera = options.camera;
     this.level = options.level;
+    this.player = options.player;
+    this.keyboard = options.keyboard;
     this.started = false;
     var fps = options.fps || 30;
-    this.tick = options.tick;
+    //this.tick = options.tick;
     this.setFps(fps);
     this.startTime = null;
     this.frameCount = 0;
@@ -68,9 +70,29 @@ var Game = Class.extend({
     }
   },
 
+  tick: function(deltaT) {
+    switch (this.state) {
+      case GameState.RUN:
+        if (!this.level.hero.alive) {
+          this.state = GameState.GAME_OVER;
+          return;
+        }
+        this.keyboard.update(deltaT);
+        this.player.handleInputs(deltaT);
+        this.level.update(deltaT);
+        camera.centerOn(this.level.hero.x, this.level.hero.y).clamp();
+        this.level.render(camera);
+        displayStats(camera, this.level.hero);
+        break;
+      case GameState.GAME_OVER:
+        this.gameOver();
+        break;
+      default:
+        throw "unsupported game state";
+    }
+  },
+
   gameOver: function () {
-    //this.level.this.camera.viewport_w
-    //this.viewport_h
     var ctx;
     if (!this.gameOverAnimation) {
       this.gameOverAnimation = {};
@@ -80,11 +102,9 @@ var Game = Class.extend({
       ctx = this.level.getLayer("gameOver");
     }
     ctx.save();
-    //this.gameOverAnimationProgress %= 360;
     ctx.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
     ctx.fillStyle = "rgba(0,0,0," + Math.min(0.01 * this.gameOverAnimation.progress, 0.8) + ")";
     ctx.fillRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
-    //ctx.fillStyle = "#000";
     ctx.fillStyle = "rgba(255,255,255," +(0.01 * this.gameOverAnimation.progress) + ")";
     ctx.textAlign = "center";
     ctx.textBaseline="middle";
