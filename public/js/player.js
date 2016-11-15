@@ -4,9 +4,12 @@ var Player = Class.extend({
     this.config = options.config;
     this.keyboard = options.inputs ? options.inputs.keyboard : null;
     this.game = options.game;
-    this.level = options.level ? options.level : this.game.level;
-    this.hero = this.level.getHero();
     this.initControls();
+  },
+
+  setLevel: function(level) {
+    this.level = level;
+    this.hero = level.getHero();
   },
 
   initControls: function () {

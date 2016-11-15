@@ -36,11 +36,16 @@ body {
 }
 
 #debug .hero-hits > p span {
-	color: red;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	overflow: hidden;
+	background: red;
+	color: transparent;
 }
 
 #debug .hero-hits > p.true > span {
-	color: green;
+	background: green;
 }
 
 #mapDebug {

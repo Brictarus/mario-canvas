@@ -42,7 +42,7 @@ var Level = Class.extend({
 
   setCamera: function (camera) {
     this.camera = camera;
-    camera.setLevel(this);
+    this.camera.setLevel(this);
   },
 
   setBackground: function (bg) {
@@ -77,7 +77,7 @@ var Level = Class.extend({
           w: tileWidth,
           h: tileHeight
         });
-        console.log(drawable.x + ", " + drawable.y);
+        //console.log(drawable.x + ", " + drawable.y);
       }
     }
     this.collidables = this.blocks.concat(this.characters);
@@ -123,17 +123,16 @@ var Level = Class.extend({
   },
 
   render: function (camera) {
-    this.clear(camera, layers);
+    this.clear(camera);
     if (this.background) {
       this.background.render(this.getLayer("layer-background"), camera);
     }
     this.renderBlocks(this.getLayer("layer-level"), camera);
     this.renderCharacters(this.getLayer("layer-characters"), camera);
-    //renderCameraBBox(camera);
   },
 
   clear: function (camera) {
-    this.layers.map(function (layer) {
+    this.layers.map((layer) => {
       layer.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
     });
   },

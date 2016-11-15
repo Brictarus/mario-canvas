@@ -77,3 +77,16 @@ function getIntersectionDepth(rectA, rectB) {
   var depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
   return new Vector(depthX, depthY);
 }
+
+/**
+ *
+ * @param n initial string to pad
+ * @param width max width to pad
+ * @param z character to pad with. Default is "0"
+ * @returns {*}
+ */
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}

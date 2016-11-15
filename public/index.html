@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8/>
+    <title>Mario Brictarus</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="game">
+    <div id="world">
+    </div>
+</div>
+<div id="debug">
+    <div id="mapDebug"></div>
+    <div id="debug-info">
+        <button id="debug-step-button">Step</button>
+        <p class="tick-info">Tick info = <span class="value"></span></p>
+        <p class="state">Game state = <span class="value"></span></p>
+        <p class="camera-x">Camera X = <span class="value"></span></p>
+        <p class="camera-y">Camera Y = <span class="value"></span></p>
+        <p class="camera-zoom">Camera Zoom = <span class="value"></span></p>
+        <p class="camera-w-x">Camera world X = <span class="value"></span></p>
+        <p class="camera-w-y">Camera world Y = <span class="value"></span></p>
+        <p class="mouse-pos">Mouse pos = <span class="value"></span></p>
+        <p class="blocks-visibility">Blocks = <span class="value"></span></p>
+        <p class="characters-visibility">Characters = <span class="value"></span></p>
+        <div class="hero-hits">Hero hits :
+            <p class="hit-l">L = <span class="value"></span>,</p>
+            <p class="hit-r">R = <span class="value"></span>,</p>
+            <p class="hit-u">U = <span class="value"></span>,</p>
+            <p class="hit-d">D = <span class="value"></span></p>
+            </p>
+        </div>
+    </div>
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.js"
+            integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+            crossorigin="anonymous"></script>
+    <script src="js/oop.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/vector.js"></script>
+    <script src="js/resources/loader.js"></script>
+    <script src="js/game-state.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/keyboard.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/level.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/testlevels.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/camera/camera.js"></script>
+    <script src="js/entity/drawable.js"></script>
+    <script src="js/entity/ground.js"></script>
+    <script src="js/entity/entity.js"></script>
+    <script src="js/entity/hero.js"></script>
+    <script src="js/drawable-factory.js"></script>
+    <script src="js/resources/resource.js"></script>
+    <script src="js/resources/image-resource.js"></script>
+    <script src="js/resources/resources-store.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
