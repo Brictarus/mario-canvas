@@ -7,10 +7,10 @@ var ImageResource = Resource.extend({
     var deferred = $.Deferred();
     var image = new Image();
     var $image = $(image);
-    $image.load(function() {
+    $image.one("load", function() {
       deferred.resolve([image]);
     });
-    $image.error(function() {
+    $image.one("error", function() {
       deferred.reject(arguments);
     });
     image.src = this.url;

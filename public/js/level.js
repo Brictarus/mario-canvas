@@ -42,7 +42,7 @@ var Level = Class.extend({
 
   setCamera: function (camera) {
     this.camera = camera;
-    camera.setLevel(this);
+    this.camera.setLevel(this);
   },
 
   setBackground: function (bg) {
@@ -123,7 +123,7 @@ var Level = Class.extend({
   },
 
   render: function (camera) {
-    this.clear(camera, layers);
+    this.clear(camera);
     if (this.background) {
       this.background.render(this.getLayer("layer-background"), camera);
     }
@@ -132,7 +132,7 @@ var Level = Class.extend({
   },
 
   clear: function (camera) {
-    this.layers.map(function (layer) {
+    this.layers.map((layer) => {
       layer.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
     });
   },

@@ -1,13 +1,15 @@
+"use strict";
+
 var Game = Class.extend({
   init: function (options) {
     options = options || {};
-    this.camera = options.camera;
-    this.level = options.level;
-    this.player = options.player;
-    this.keyboard = options.keyboard;
-    this.started = false;
+
     var fps = options.fps || 30;
-    //this.tick = options.tick;
+    this.keyboard = options.keyboard;
+    this.$root = options.$root;
+
+    this.started = false;
+
     this.setFps(fps);
     this.startTime = null;
     this.frameCount = 0;
@@ -15,17 +17,19 @@ var Game = Class.extend({
     if (options.autostart) {
       this.start(this.fps);
     }
+    this.resourcesStore = new ResourcesStore({name: 'misc'});
   },
 
   start: function () {
     this.started = true;
-    this.state = GameState.RUN;
+    this.state = GameState.INIT;
     this.frameCount = 0;
     this.then = Date.now();
     this.startTime = this.then;
     console.log('Game started at ' + this.fps + ' FPS');
     console.log('Start time : ' + this.startTime);
     this.animate();
+    this.loadLevel(0);
   },
 
   stop: function () {
@@ -72,6 +76,8 @@ var Game = Class.extend({
 
   tick: function(deltaT) {
     switch (this.state) {
+      case GameState.INIT:
+        break;
       case GameState.RUN:
         if (!this.level.hero.alive) {
           this.state = GameState.GAME_OVER;
@@ -80,9 +86,9 @@ var Game = Class.extend({
         this.keyboard.update(deltaT);
         this.player.handleInputs(deltaT);
         this.level.update(deltaT);
-        camera.centerOn(this.level.hero.x, this.level.hero.y).clamp();
-        this.level.render(camera);
-        displayStats(camera, this.level.hero);
+        this.camera.centerOn(this.level.hero.x, this.level.hero.y).clamp();
+        this.level.render(this.camera);
+        displayStats(this.camera, this.level.hero);
         break;
       case GameState.GAME_OVER:
         this.gameOver();
@@ -90,6 +96,81 @@ var Game = Class.extend({
       default:
         throw "unsupported game state";
     }
+  },
+
+  loadLevel: function(index) {
+    var deferred = $.Deferred();
+    var levelData;
+    this.loadLevelData(index)
+        .then(function(data) {
+          levelData = data;
+          return this.loadLevelAssets(data);
+        }.bind(this))
+        .done(function() {
+          this.initLevel(levelData);
+          this.state = GameState.RUN;
+          deferred.resolve();
+        }.bind(this))
+        .fail(this.onLoadLevelFailed.bind(this));
+    return deferred.promise();
+  },
+
+  loadLevelData: function (index) {
+    var deferred = $.Deferred();
+    if (index >= 0 && index < definedLevels.length) {
+      deferred.resolve(definedLevels[index]);
+    } else {
+      deferred.reject("Loading level data failed : (index = " + index + ")");
+    }
+    return deferred.promise();
+  },
+
+  loadLevelAssets: function(levelData) {
+    var deferred = $.Deferred();
+    var loader = new ResourceLoader([
+      new ImageResource({ key: "bg-" + levelData.background, url: "/assets/backgrounds/" + pad(levelData.background, 2) + ".png" })
+    ]);
+    loader.get()
+        .then(function(resources) {
+          this.resourcesStore.addResources(resources);
+          deferred.resolve();
+        }.bind(this))
+        .fail(function() {
+          deferred.reject("Loading level asset failed : (index = " + levelData.id + ")");
+        });
+    return deferred.promise();
+  },
+
+  initLevel: function(levelData) {
+    var img = this.resourcesStore.getResource("bg-" + levelData.background).data;
+    this.level = window.LEVEL = new Level({
+      $root: this.$root,
+      config: config
+    });
+    this.level.load(levelData);
+    var hero = window.HERO = this.level.hero;
+
+    var background = new Background({
+      image: img,
+      parallax: 1 / 6
+    });
+    this.level.setBackground(background);
+
+    var viewport_width = this.$root.width(),
+        viewport_heigth = this.$root.height();
+
+    this.camera = new Camera(0, 0, viewport_width, viewport_heigth, config.camera.zoom, this.level.width, this.level.height);
+    this.level.setCamera(this.camera);
+
+    this.camera.centerOn(hero.x, hero.y).clamp();
+
+    // this.level.render(this.camera);
+
+    this.player.setLevel(this.level);
+  },
+
+  onLoadLevelFailed: function() {
+    console.error("lo")
   },
 
   gameOver: function () {

@@ -27,50 +27,17 @@ function displayStat(name, value) {
   }
 }
 
-var mario, camera, layers;
-var currLevel = definedLevels[0];
-//var currLevel = testLevel;
-
-var resourcesStore = new ResourcesStore({name: 'misc'});
-var loader = new ResourceLoader([
-  new ImageResource({ key: "bg-" + currLevel.background, url: "/assets/backgrounds/" + pad(currLevel.background, 2) + ".png" })
-]);
-loader.get().then( resources => {
-  resourcesStore.addResources(resources);
-  onLoad();
-});
-
-
-function onLoad() {
-  var img = resourcesStore.getResource("bg-" + currLevel.background).data;
-
+(function () {
   var $root = $("#world");
-  var viewport_width = $root.width(), viewport_heigth = $root.height()
-  var lvl = window.LEVEL = new Level({
-    $root: $root,
-    config: config
-  });
-  lvl.load(currLevel);
-  var background = new Background({
-    image: img,
-    parallax: 1 / 6
-  });
-  lvl.setBackground(background);
-  window.MARIO = mario = lvl.hero;
-  camera = new Camera(0, 0, viewport_width, viewport_heigth, config.camera.zoom, lvl.width, lvl.height);
-  lvl.setCamera(camera);
-  camera.centerOn(lvl.hero.x, lvl.hero.y).clamp();
 
-  lvl.render(camera);
   var keyboard = window.k = new Keyboard();
   keyboard.start();
 
   var game = window.g = new Game({
     fps: 60,
     autostart: false,
-    camera: camera,
-    level: lvl,
-    keyboard: keyboard
+    keyboard: keyboard,
+    $root: $root
   });
 
   game.player = window.p = new Player({
@@ -78,13 +45,16 @@ function onLoad() {
     config: config,
     inputs: {
       keyboard: keyboard
-    },
-    level: lvl
+    }
   });
 
   game.start();
 
-  $("#debug-step-button").on("click", function () {
-    game.animate();
-  });
-}
+  if (game.fps === -1) {
+    var $debugStepButton = $("#debug-step-button");
+    $debugStepButton.show();
+    $debugStepButton.on("click", function () {
+      game.animate();
+    });
+  }
+})();
