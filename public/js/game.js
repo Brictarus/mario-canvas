@@ -101,17 +101,19 @@ var Game = Class.extend({
     } else {
       ctx = this.level.getLayer("gameOver");
     }
-    ctx.save();
-    ctx.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
-    ctx.fillStyle = "rgba(0,0,0," + Math.min(0.01 * this.gameOverAnimation.progress, 0.8) + ")";
-    ctx.fillRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
-    ctx.fillStyle = "rgba(255,255,255," +(0.01 * this.gameOverAnimation.progress) + ")";
-    ctx.textAlign = "center";
-    ctx.textBaseline="middle";
-    ctx.font = "bold 30px Arial";
-    ctx.fillText("Game Over !", this.camera.viewport_w / 2, this.gameOverAnimation.progress * this.camera.viewport_h / 2 / 100);
-    this.gameOverAnimation.progress = Math.min(this.gameOverAnimation.progress + 1, 100);
-    ctx.restore();
+    if (this.gameOverAnimation.progress <= 100) {
+      ctx.save();
+      ctx.clearRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
+      ctx.fillStyle = "rgba(0,0,0," + Math.min(0.01 * this.gameOverAnimation.progress, 0.8) + ")";
+      ctx.fillRect(0, 0, this.camera.viewport_w, this.camera.viewport_h);
+      ctx.fillStyle = "rgba(255,255,255," +(0.01 * this.gameOverAnimation.progress) + ")";
+      ctx.textAlign = "center";
+      ctx.textBaseline="middle";
+      ctx.font = "bold 30px Arial";
+      ctx.fillText("Game Over !", this.camera.viewport_w / 2, this.gameOverAnimation.progress * this.camera.viewport_h / 2 / 100);
+      this.gameOverAnimation.progress = Math.min(this.gameOverAnimation.progress + 1, 100);
+      ctx.restore();
+    }
   }
 });
 
